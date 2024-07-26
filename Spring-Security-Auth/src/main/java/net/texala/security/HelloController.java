@@ -17,4 +17,8 @@ public class HelloController {
     public String sayHelloAdmin() {
         return "Say Hello Admin";
     }
+    @GetMapping("/superadmin")
+    public String sayHelloSuperAdmin() {
+    	return "Say Hello SuperAdmin";
+    }
 }

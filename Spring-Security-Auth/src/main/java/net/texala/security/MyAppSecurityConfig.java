@@ -28,20 +28,26 @@ public class MyAppSecurityConfig extends WebSecurityConfigurerAdapter {
             .and()
             .withUser("admin")
             .password(encoder.encode("admin"))
-            .roles("ADMIN");
+            .roles("ADMIN")
+	        .and()
+	        .withUser("superadmin")
+	        .password(encoder.encode("superadmin"))
+	        .roles("SUPERADMIN");
     }
-
+    
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
-            .antMatchers("/admin").hasRole("ADMIN")
-            .antMatchers("/user").hasAnyRole("ADMIN", "USER")
+            .antMatchers("/admin").hasAnyRole("ADMIN", "SUPERADMIN")  // admin and superadmin can access /admin
+            .antMatchers("/user").hasAnyRole("USER", "SUPERADMIN", "ADMIN")    // user, admin and superadmin can access /user
+            .antMatchers("/superadmin").hasRole("SUPERADMIN")          // only superadmin can access /superadmin
             .antMatchers("/").permitAll()
             .antMatchers("/h2-console/**").permitAll()
             .and().formLogin();
 
-        // the below two lines are used when we are using h2 database
+        // Disable CSRF and frame options for H2 console
         http.csrf().disable();
         http.headers().frameOptions().disable();
     }
+
 }
